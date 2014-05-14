@@ -1,8 +1,10 @@
 <form id="query" name="query" action="javascript: void(0)">
 	<label for="origin_place">OriginPlace</label>
-	<input type="text" id="origin_place" name="origin_place" value="BJSA"><br>
+	<input type="text" id="origin_place" name="origin_place" value="BJSA">
+  <span id="origin_place_autosuggest"></span><br>
 	<label for="destination_place">DestinationPlace</label>
-	<input type="text" id="destination_place" name="destination_place" value="LAXA"><br>
+	<input type="text" id="destination_place" name="destination_place" value="LAXA">
+  <span id="destination_place_autosuggest"></span><br>
 	<label for="outbound_date">OutboundDate</label>
 	<input type="text" id="outbound_date" name="outbound_date" value="2014-07"><br>
 	<label for="inbound_date">InboundDate</label>
@@ -10,11 +12,11 @@
 </form>
 
 <button id="submit_once">Submit</button><br>
-
+<!-- 
 <button id="submit_with_timeout">Submit with Timeout</button>
 <label for="timeout">Timeout:</label>
 <input type="text" id="timeout" value=200>
 <label for="limit">Limit:</label>
-<input type="text" id="limit" value=10>
+<input type="text" id="limit" value=10> -->
 
 <div id="response"></div>

@@ -1,10 +1,20 @@
 Rails.application.routes.draw do
 
-  get 'skyscanner_api/creating_the_session'
+  get 'skyscanner_api/creating_the_session'=> 'skyscanner_api#creating_the_session'
 
-  get 'skyscanner_api/demo'
 
-  get 'skyscanner_api/cheapest_quotes'
+  get 'skyscanner_api/polling_the_session'=> 'skyscanner_api#polling_the_session'
+
+  get 'skyscanner_api/location_autosuggest'
+
+  get 'skyscanner_api/creating_booking_details'
+
+
+  get 'skyscanner_api/polling_booking_details'
+
+  get 'skyscanner_api/demo'  => 'skyscanner_api#demo'
+
+  get 'skyscanner_api/cheapest_quotes' => 'skyscanner_api#cheapest_quotes'
 
 
   # The priority is based upon order of creation: first created -> highest priority.
