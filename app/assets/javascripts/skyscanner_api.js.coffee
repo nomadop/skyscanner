@@ -2,6 +2,20 @@
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
+
+array_find = (array, selector) ->
+	result = null
+	$.each array, (index, el) ->
+		result = el if selector(el)
+	return result
+
+class Array
+	find: (selector) ->
+		result = null
+		$.each this, (index, el) ->
+			result = el if selector(el)
+		return result
+
 cheapest_quotes = ->
 	show_response = (data) ->
 		console.log data
@@ -32,24 +46,29 @@ window.polling_the_session = (SessionKey) ->
 		$("#response").html "<ul id='list'></ul>"
 		$("#response").html "NO RESULT" if data.Itineraries.length == 0
 		$.each data.Itineraries, (index, it) ->
+			OutboundLeg = array_find data.Legs, (el) ->
+				return el.Id == it.OutboundLegId
+			InboundLeg = array_find data.Legs, (el) ->
+				return el.Id == it.InboundLegId
+			
 			$("#list").append "<li id='itinerariy#{index}'>
 					<ul name='OutboundLeg'>
 						前往:<br>
-						#{it.OutboundLeg.OriginStation}&nbsp#{it.OutboundLeg.Departure}&nbsp=>&nbsp#{it.OutboundLeg.Arrival}&nbsp#{it.OutboundLeg.DestinationStation}<br>
-						途径:&nbsp#{it.OutboundLeg.Stops}<br>
-						航空公司:&nbsp#{it.OutboundLeg.Carriers}
+						#{(array_find data.Places, (el) -> return el.Id == OutboundLeg.OriginStation).Name}&nbsp#{OutboundLeg.Departure}&nbsp=>&nbsp#{OutboundLeg.Arrival}&nbsp#{(array_find data.Places, (el) -> return el.Id == OutboundLeg.DestinationStation).Name}<br>
+						途径:&nbsp#{OutboundLeg.Stops}<br>
+						航空公司:&nbsp#{OutboundLeg.Carriers}
 					</ul>
 					#{
-						if it.InboundLeg
-							'<ul name="InboundLeg">返回:<br>' + it.InboundLeg.OriginStation + '&nbsp' + it.InboundLeg.Departure + '&nbsp=>&nbsp' + it.InboundLeg.Arrival + '&nbsp' + it.InboundLeg.DestinationStation + '<br>途径:&nbsp' + it.InboundLeg.Stops + '<br>航空公司:&nbsp' + it.InboundLeg.Carriers
+						if InboundLeg
+							'<ul name="InboundLeg">返回:<br>' + InboundLeg.OriginStation + '&nbsp' + InboundLeg.Departure + '&nbsp=>&nbsp' + InboundLeg.Arrival + '&nbsp' + InboundLeg.DestinationStation + '<br>途径:&nbsp' + InboundLeg.Stops + '<br>航空公司:&nbsp' + InboundLeg.Carriers
 						else
 							""
 					}
 					<ul name='Prices'>
 						价格: #{it.PricingOptions[0].Price}#{data.Query.Currency}
-						<a name='details' href='javascript: void(0)' data-outboundLegId='#{it.OutboundLeg.Id}' data-inboundLegId='#{
-							if it.InboundLeg
-								it.InboundLeg.Id
+						<a name='details' href='javascript: void(0)' data-outboundLegId='#{OutboundLeg.Id}' data-inboundLegId='#{
+							if InboundLeg
+								InboundLeg.Id
 							else
 								''
 						}' data-ulId='itinerariy#{index}'>Details</a>
@@ -101,10 +120,13 @@ window.polling_booking_details = (SessionKey, IitineraryKey, ulId) ->
 				AgentName = bi.AgentID
 				$.each Agents, (index, agent) ->
 					AgentName = agent['Name'] if agent['Id'] == bi.AgentID
-
 				ul.append "<li>
 						<a href='#{bi.Deeplink}'>#{AgentName}:&nbsp#{bi.Price}#{data.Query.Currency}</a>
 					</li>"
+
+		# ul.append("</ul>行程:<ul>")
+		# $.each data.Segments, (index, seg) ->
+			
 			
 	
 	$.ajax {
@@ -140,7 +162,6 @@ location_autosuggest = (query, input, output) ->
 		,
 		dataType: 'json'
 	}
-
 
 
 $(document).ready ->

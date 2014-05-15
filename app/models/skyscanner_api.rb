@@ -1,17 +1,17 @@
 class SkyscannerApi
 
 	ENV = [
-		{
-			:version => 'web_crawler',
-			:url => "http://www.skyscanner.net", 
-			:live_price_uri => "/dataservices/routedate/v2.0/",
-			:browse_quotes_uri => "/dataservices/browse/1.0",
-			:default => {
-				:market => "CN",
-				:currency => "cny",
-				:locale => "ZH", 
-			}
-		},
+		# {
+		# 	:version => 'web_crawler',
+		# 	:url => "http://www.skyscanner.net", 
+		# 	:live_price_uri => "/dataservices/routedate/v2.0/",
+		# 	:browse_quotes_uri => "/dataservices/browse/1.0",
+		# 	:default => {
+		# 		:market => "CN",
+		# 		:currency => "cny",
+		# 		:locale => "ZH", 
+		# 	}
+		# },
 		{
 			:version => "api",
 			:apikey => "", 
@@ -88,13 +88,13 @@ class SkyscannerApi
 
 	def self.creating_the_session origin_place, destination_place, outbound_date, inbound_date = nil, cabinclass = nil, adults = nil, children = nil
 		querys = {
-			'country' => get_env[:default][:market],
-			'currency' => get_env[:default][:currency],
-			'locale' => get_env[:default][:locale],
-			'originplace' => origin_place,
+			'country'          => get_env[:default][:market],
+			'currency'         => get_env[:default][:currency],
+			'locale'           => get_env[:default][:locale],
+			'originplace'      => origin_place,
 			'destinationplace' => destination_place,
-			'outbounddate' => outbound_date,
-			'locationschema' => 'Sky'
+			'outbounddate'     => outbound_date,
+			'locationschema'   => 'Sky'
 		}
 		querys['inbounddate'] = inbound_date if inbound_date != nil
 
@@ -113,20 +113,19 @@ class SkyscannerApi
 	end
 
 	def self.analyzing_the_session hash
-		# return hash
+		return hash
 		itineraries = []
 		hash['Legs'].each do |leg|
 			leg['Carriers'].collect! do |carrier|
-				hash['Carriers'].select{ |c| c['Id'] == carrier }[0]['Name']
+				hash['Carriers'].inject(carrier) { |result, c| c['Id'] == carrier ? c['Name'] : result }
 			end
 			leg['OperatingCarriers'].collect! do |carrier|
-				hash['Carriers'].select{ |c| c['Id'] == carrier }[0]['Name']
+				hash['Carriers'].inject(carrier) { |result, c| c['Id'] == carrier ? c['Name'] : result }
 			end
-			leg['OriginStation'] = hash['Places'].select{ |place| place['Id'] == leg['OriginStation'] }[0]['Name']
-			leg['DestinationStation'] = hash['Places'].select{ |place| place['Id'] == leg['DestinationStation'] }[0]['Name']
+			leg['OriginStation'] = hash['Places'].inject(nil) { |result, place| place['Id'] == leg['OriginStation'] ? place['Name'] : result }
+			leg['DestinationStation'] = hash['Places'].inject(nil) { |result, place| place['Id'] == leg['DestinationStation'] ? place['Name'] : result }
 			leg['Stops'].map! do |place|
-				p = hash['Places'].select{ |p| p['Id'] == place }[0]
-				p != nil ? p['Name'] : place
+				hash['Places'].inject(place){ |result, p| p['Id'] == place ? p['Name'] : result }
 			end
 		end
 		hash['Itineraries'].each do |it|
@@ -134,8 +133,7 @@ class SkyscannerApi
 			it['InboundLeg'] = hash['Legs'].select{ |leg| leg['Id'] == it['InboundLegId'] }[0]
 			it['PricingOptions'].each do |po|
 				po['Agents'].collect! do |agent|
-					a = hash['Agents'].select{ |a| a['Id'] == agent }[0]
-					a != nil ? a['Name'] : agent
+					hash['Agents'].inject(agent){ |result, a| a['Id'] == agent ? a['Name'] : result }
 				end
 			end
 			it.delete 'OutboundLegId'
@@ -186,18 +184,16 @@ class SkyscannerApi
 				end
 			end
 		end
-		if hash['Status'] == 'Current'
-			hash['Segments'].each do |seg|
-				seg['Carrier'] = hash['Carriers'].select{ |c| c['Id'] == seg['Carrier'] }[0]
-				seg['FlightNumber'] = seg['Carrier']['Code'] + seg['FlightNumber']
-				seg['Carrier'] = seg['Carrier']['Name']
-				seg['OperatingCarrier'] = hash['Carriers'].select{ |c| c['Id'] == seg['OperatingCarrier'] }[0]['Name']
-				seg['OriginStation'] = hash['Places'].select{ |place| place['Id'] == seg['OriginStation'] }[0]['Name']
-				seg['DestinationStation'] = hash['Places'].select{ |place| place['Id'] == seg['DestinationStation'] }[0]['Name']
-			end
-			hash.delete 'Carriers'
-			hash.delete 'Places'
-		end
+		# hash['Segments'].each do |seg|
+		# 	seg['Carrier']            = hash['Carriers'].select{ |c| c['Id'] == seg['Carrier'] }[0]
+		# 	seg['FlightNumber']       = seg['Carrier']['Code'] + seg['FlightNumber']
+		# 	seg['Carrier']            = seg['Carrier']['Name']
+		# 	seg['OperatingCarrier']   = hash['Carriers'].select{ |c| c['Id'] == seg['OperatingCarrier'] }[0]['Name']
+		# 	seg['OriginStation']      = hash['Places'].select{ |place| place['Id'] == seg['OriginStation'] }[0]['Name']
+		# 	seg['DestinationStation'] = hash['Places'].select{ |place| place['Id'] == seg['DestinationStation'] }[0]['Name']
+		# end
+		# hash.delete 'Carriers'
+		# hash.delete 'Places'
 		return hash
 	end
 
@@ -211,7 +207,8 @@ class SkyscannerApi
 				response
 			end
 		rescue Exception => e
-			{ 'Status' => 'Error', 'Exception' => e.backtrace }
+			e
+			# { 'Status' => 'Error', 'Exception' => e.backtrace }
 		end
 	end
 

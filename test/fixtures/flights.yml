@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  origin_place: MyString
+  destination_place: MyString
+  departure: 2014-05-15 11:25:07
+  arrival: 2014-05-15 11:25:07
+  price: 1.5
+  flight_code: MyString
+
+two:
+  origin_place: MyString
+  destination_place: MyString
+  departure: 2014-05-15 11:25:07
+  arrival: 2014-05-15 11:25:07
+  price: 1.5
+  flight_code: MyString

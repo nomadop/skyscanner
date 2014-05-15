@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  agent_id: 
+  deeplink: 
+  price: 1.5
+
+two:
+  agent_id: 
+  deeplink: 
+  price: 1.5
