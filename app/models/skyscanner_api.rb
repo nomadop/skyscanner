@@ -21,7 +21,8 @@ class SkyscannerApi
 			:default => {
 				:market => "CN",
 				:currency => "cny",
-				:locale => "zh-CN" 
+				:locale => "zh-CN",
+				:locationschema => 'Sky'
 			}
 		}
 	]
@@ -94,7 +95,7 @@ class SkyscannerApi
 			'originplace'      => origin_place,
 			'destinationplace' => destination_place,
 			'outbounddate'     => outbound_date,
-			'locationschema'   => 'Sky'
+			'locationschema'   => get_env[:default][:locationschema]
 		}
 		querys['inbounddate'] = inbound_date if inbound_date != nil
 
@@ -154,7 +155,7 @@ class SkyscannerApi
 				response
 			end
 		rescue Exception => e
-			{ 'Status' => 'UpdatesComplete', Exception => e.backtrace }
+			{ 'Status' => 'UpdatesError', Exception => e.backtrace }
 		end
 	end
 

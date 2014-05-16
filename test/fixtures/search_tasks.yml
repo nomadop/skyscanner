@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  origin_city: MyString
+  destination_city: MyString
+  date: 2014-05-16 10:04:54
+  status: MyString
+
+two:
+  origin_city: MyString
+  destination_city: MyString
+  date: 2014-05-16 10:04:54
+  status: MyString

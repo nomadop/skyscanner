@@ -11,7 +11,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140515082049) do
+ActiveRecord::Schema.define(version: 20140516020454) do
+
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
+  create_table "agents", force: true do |t|
+    t.string   "name"
+    t.string   "image_url"
+    t.string   "booking_number"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "booking_items", force: true do |t|
     t.integer  "agent_id",   null: false
@@ -23,14 +34,22 @@ ActiveRecord::Schema.define(version: 20140515082049) do
   end
 
   create_table "flights", force: true do |t|
-    t.string   "session_key",      null: false
-    t.string   "leg_id",           null: false
+    t.integer  "search_task_id"
     t.string   "origin_city",      null: false
     t.string   "destination_city", null: false
     t.datetime "departure",        null: false
     t.datetime "arrival",          null: false
-    t.string   "flight_number"
+    t.string   "flight_number",    null: false
     t.float    "price"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "search_tasks", force: true do |t|
+    t.string   "origin_city",                   null: false
+    t.string   "destination_city",              null: false
+    t.string   "date",                          null: false
+    t.string   "status",           default: ""
     t.datetime "created_at"
     t.datetime "updated_at"
   end
